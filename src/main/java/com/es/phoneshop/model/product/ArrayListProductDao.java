@@ -2,55 +2,75 @@ package com.es.phoneshop.model.product;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 public class ArrayListProductDao implements ProductDao {
     private List<Product> products;
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public ArrayListProductDao() {
-        this.products=new ArrayList<>();
+    public ArrayListProductDao() { products = new ArrayList<>();}
+
+    public ArrayListProductDao(boolean initWithSampleProducts)
+    {
+        products = new ArrayList<>();
+        if (initWithSampleProducts)
+            saveSampleProducts();
+
     }
+
 
     @Override
     public Product getProduct(Long id) throws NoSuchElementException {
-        return products
-                .stream()
-                .filter(product -> product.getId().equals(id))
-                .findFirst()
-                .get(); //если продукт не будет найден
+        lock.readLock().lock();
+        try {
+            return products
+                    .stream()
+                    .filter(product -> product.getId().equals(id))
+                    .findFirst()
+                    .get(); //если продукт не будет найден
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public List<Product> findProducts() {
-        if (products.isEmpty()) {
-            return Collections.emptyList();
-        } else {
+        lock.readLock().lock();
+        try {
             return products;
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public void save(Product product) {
-        if (products.stream()
-                .noneMatch(product1 -> product1.getId()
-                        .equals(product.getId()))) {
+        lock.readLock().lock();
+        try {
+            if (products.stream()
+                    .anyMatch(product1 -> product1.getId()
+                            .equals(product.getId()))) {
+                products.remove(product);
+            }
             products.add(product);
-        } else {
-            products.remove(product);
-            products.add(product);
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public void delete(Long id) {
-        Product product = getProduct(id);
-        if (product != null) {
-            products.remove(product);
-        } else {
-            throw new NoSuchElementException("Does not contain such product");
+        lock.readLock().lock();
+        try {
+            products.removeIf(product -> product.getId().equals(id));
+        } finally {
+            lock.readLock().unlock();
         }
     }
-    private List<Product> getSampleProducts(){
+
+    private List<Product> saveSampleProducts() {
         List<Product> result = new ArrayList<>();
         Currency usd = Currency.getInstance("USD");
         result.add(new Product(1L, "sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
