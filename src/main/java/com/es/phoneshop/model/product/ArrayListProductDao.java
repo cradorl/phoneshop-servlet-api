@@ -1,6 +1,5 @@
 package com.es.phoneshop.model.product;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -8,12 +7,22 @@ import java.util.stream.Collectors;
 
 
 public class ArrayListProductDao implements ProductDao {
+    private  static  ProductDao instance;
+
+    public  static synchronized ProductDao getInstance(){
+        if (instance==null){
+            instance=new ArrayListProductDao();
+        }
+        return instance;
+    }
+
     private List<Product> products;
+    private ArrayListProductDao() {
+        this.products = new ArrayList<>();
+    }
+
     private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public ArrayListProductDao() {
-        products = new ArrayList<>();
-    }
 
     @Override
     public Product getProduct(Long id) throws NoSuchElementException {
@@ -33,8 +42,8 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         lock.readLock().lock();
         try {
-            Comparator<Product> comparator = Comparator.comparing(product -> {
-                if (sortField != null && SortField.description == sortField) {
+            Comparator <Product> comparator = Comparator.comparing(product -> {
+                if (SortField.description == sortField) {
                     return (Comparable) product.getDescription();
                 } else {
                     return (Comparable) product.getPrice();
@@ -46,7 +55,6 @@ public class ArrayListProductDao implements ProductDao {
                     .filter(product -> product.getPrice()!=null)
                     .filter(product -> product.getStock()>0)
                     .collect(Collectors.toList());
-                    //.collect(Collectors.toList());
         } finally {
             lock.readLock().unlock();
         }

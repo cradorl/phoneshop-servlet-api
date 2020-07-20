@@ -14,12 +14,8 @@ import java.util.List;
 public class DemoDataServletContextListener implements ServletContextListener {
     private ProductDao productDAO;
 
-    public DemoDataServletContextListener(ProductDao productDAO) {
-        this.productDAO = new ArrayListProductDao();
-    }
-
     public DemoDataServletContextListener() {
-        this.productDAO = new ArrayListProductDao();
+        this.productDAO = ArrayListProductDao.getInstance();
     }
 
     @Override

@@ -5,37 +5,42 @@
 
 <jsp:useBean id="products" type="java.util.ArrayList" scope="request"/>
 <tags:master pageTitle="Product List">
-  <p>
-    Welcome to Expert-Soft training!
-  </p>
-  <form><input name="query" value="">
-  <button>search</button></form>
-  <table>
-    <thead>
-      <tr>
-        <td>Image</td>
-        <td>
-          Description
-          <tags:sortLink order="asc" sort="description"></tags:sortLink>
-          <tags:sortLink order="desc" sort="description"></tags:sortLink>
-        </td>
-        <td class="price">
-          Price
-          <tags:sortLink order="asc" sort="price"></tags:sortLink>
-          <tags:sortLink order="desc" sort="price"></tags:sortLink>
-        </td>
-      </tr>
-    </thead>
-    <c:forEach var="product" items="${products}">
-      <tr>
-        <td>
-          <img class="product-tile" src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${product.imageUrl}">
-        </td>
-        <td>${product.description}</td>
-        <td class="price">
-          <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
-        </td>
-      </tr>
-    </c:forEach>
-  </table>
+    <p>
+        Welcome to Expert-Soft training!
+    </p>
+    <form><label>
+        <input name="query" value="">
+    </label>
+        <button>search</button>
+    </form>
+    <table>
+        <thead>
+        <tr>
+            <td>Image</td>
+            <td>
+                Description
+                <tags:sortLink sort="description" order="asc"/>
+                <tags:sortLink sort="description" order="desc"/>
+            </td>
+            <td class="price">
+                Price
+                <tags:sortLink sort="price" order="asc"/>
+                <tags:sortLink sort="price" order="desc"/>
+            </td>
+        </tr>
+        </thead>
+        <c:forEach var="product" items="${products}">
+            <tr>
+                <td>
+                    <img class="product-tile"
+                         src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${product.imageUrl}">
+                </td>
+                <td>${product.description}</td>
+                <td class="price">
+                    <fmt:formatNumber value="${product.price}" type="currency"
+                                      currencySymbol="${product.currency.symbol}"/>
+                </td>
+            </tr>
+        </c:forEach>
+    </table>
 </tags:master>
