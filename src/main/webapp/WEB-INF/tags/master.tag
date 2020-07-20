@@ -17,5 +17,8 @@
   <main>
     <jsp:doBody/>
   </main>
+  <p>
+  (c)Darya Merkulova
+  </p>
 </body>
 </html>

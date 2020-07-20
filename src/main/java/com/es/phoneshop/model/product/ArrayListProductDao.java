@@ -54,6 +54,7 @@ public class ArrayListProductDao implements ProductDao {
                     .filter(product -> query==null || query.isEmpty() || product.getDescription().contains(query))
                     .filter(product -> product.getPrice()!=null)
                     .filter(product -> product.getStock()>0)
+                    .sorted(comparator)
                     .collect(Collectors.toList());
         } finally {
             lock.readLock().unlock();
