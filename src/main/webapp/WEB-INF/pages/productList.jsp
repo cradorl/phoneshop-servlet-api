@@ -16,13 +16,13 @@
         <td>Image</td>
         <td>
           Description
-          <a href="?sort=description&order=asc&query=${param.query}">asc</a>
-          <a href="?sort=description&order=desc&query=${param.query}">desc</a>
+          <tags:sortLink order="asc" sort="description"></tags:sortLink>
+          <tags:sortLink order="desc" sort="description"></tags:sortLink>
         </td>
         <td class="price">
           Price
-          <a href="?sort=price&order=asc&query=${param.query}">asc</a>
-          <a href="?sort=price&order=desc&query=${param.query}">desc</a>
+          <tags:sortLink order="asc" sort="price"></tags:sortLink>
+          <tags:sortLink order="desc" sort="price"></tags:sortLink>
         </td>
       </tr>
     </thead>
