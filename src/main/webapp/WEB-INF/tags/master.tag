@@ -17,8 +17,11 @@
   <main>
     <jsp:doBody/>
   </main>
-  <p>
-  (c)Darya Merkulova
-  </p>
+  <footer>
+    &copy; made by Darya Merkulova
+  </footer>
+<%--  <p>--%>
+<%--  (c)Darya Merkulova--%>
+<%--  <p>--%>
 </body>
 </html>

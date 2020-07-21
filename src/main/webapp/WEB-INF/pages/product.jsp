@@ -38,6 +38,5 @@
             ${product.stock}
     </td>
     </tr>
-
     </table>
 </tags:master>
