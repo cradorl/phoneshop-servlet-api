@@ -7,32 +7,33 @@ import java.util.stream.Collectors;
 
 
 public class ArrayListProductDao implements ProductDao {
-    private  static  ProductDao instance;
+    private static final String SEPARATOR = " ";
+    private static ProductDao instance;
 
-    public  static synchronized ProductDao getInstance(){
-        if (instance==null){
-            instance=new ArrayListProductDao();
+    public static synchronized ProductDao getInstance() {
+        if (instance == null) {
+            instance = new ArrayListProductDao();
         }
         return instance;
     }
 
     private List<Product> products;
-    private ArrayListProductDao() {
+
+    ArrayListProductDao() {
         this.products = new ArrayList<>();
     }
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-
     @Override
-    public Product getProduct(Long id) throws NoSuchElementException {
+    public Product getProduct(Long id) throws ProductNotFoundException {
         lock.readLock().lock();
         try {
             return products
                     .stream()
                     .filter(product -> product.getId().equals(id))
-                    .findFirst()
-                    .get(); //если продукт не будет найден
+                    .findAny()
+                    .orElseThrow(()-> new ProductNotFoundException(id));
         } finally {
             lock.readLock().unlock();
         }
@@ -42,23 +43,43 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         lock.readLock().lock();
         try {
-            Comparator <Product> comparator = Comparator.comparing(product -> {
-                if (SortField.description == sortField) {
-                    return (Comparable) product.getDescription();
-                } else {
-                    return (Comparable) product.getPrice();
-                }
-            });
-
+            Comparator<Product> comparator = getComparatorForProducts(query, sortField, sortOrder);
             return products.stream()
-                    .filter(product -> query==null || query.isEmpty() || product.getDescription().contains(query))
-                    .filter(product -> product.getPrice()!=null)
-                    .filter(product -> product.getStock()>0)
+                    .filter(product -> query == null || query.isEmpty() || isProductContainsQuery(product, query))
+                    .filter(product -> product.getPrice() != null)
+                    .filter(product -> product.getStock() > 0)
                     .sorted(comparator)
                     .collect(Collectors.toList());
         } finally {
             lock.readLock().unlock();
         }
+    }
+
+    private Comparator<Product> getComparatorForProducts(String query, SortField sortField, SortOrder sortOrder) {
+        Comparator<Product> comparator = Comparator.comparing((Product product) -> (query != null && !query.isEmpty()
+                ? getQueryRate(product, query) : 0))
+                .reversed();
+
+        if (sortField == SortField.description) {
+            comparator = Comparator.comparing(Product::getDescription);
+        } else if (sortField == SortField.price) {
+            comparator = Comparator.comparing(Product::getPrice);
+        } else if (sortOrder == SortOrder.desc) {
+            comparator = comparator.reversed();
+        }
+        return comparator;
+    }
+
+    private double getQueryRate(Product product, String query) {
+        return (double) Arrays.stream(query.split(SEPARATOR))
+                .filter(wordFromQuery -> product.getDescription().contains(wordFromQuery))
+                .count() / product.getDescription().split(SEPARATOR).length;
+    }
+
+    private boolean isProductContainsQuery(Product product, String query) {
+        return Arrays.stream(product.getDescription().split(SEPARATOR))
+                .anyMatch(wordFromDescription -> Arrays.stream(query.split(SEPARATOR))
+                        .anyMatch(wordFromDescription::contains));
     }
 
     @Override
