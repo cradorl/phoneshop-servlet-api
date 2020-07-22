@@ -1,12 +1,14 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.ProductHistory;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -20,7 +22,7 @@ public class DemoDataServletContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        saveSampleProducts().stream().forEach(product -> {
+        saveSampleProducts().forEach(product -> {
             productDAO.save(product);
         });
     }
@@ -28,6 +30,22 @@ public class DemoDataServletContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
+    }
+    private List<ProductHistory> getSamplePriceHistory(Product product)
+    {
+        List<ProductHistory> samplePriceHistory = new ArrayList<>();
+        Currency usd = Currency.getInstance("USD");
+        samplePriceHistory.add(new ProductHistory(new BigDecimal(100), usd, LocalDate.of(2010, 4,12) ));
+        samplePriceHistory.add(new ProductHistory(new BigDecimal(130), usd, LocalDate.of(2010, 8,23) ));
+        samplePriceHistory.add(new ProductHistory(new BigDecimal(133), usd, LocalDate.of(2010, 11,2) ));
+        samplePriceHistory.add(new ProductHistory(new BigDecimal(155), usd, LocalDate.of(2010, 4,11) ));
+        samplePriceHistory.add(new ProductHistory(new BigDecimal(123), usd, LocalDate.of(2011, 8,12) ));
+        samplePriceHistory.add(new ProductHistory(new BigDecimal(150), usd, LocalDate.of(2015, 3,28) ));
+        samplePriceHistory.add(new ProductHistory(new BigDecimal(155), usd, LocalDate.of(2016, 10,8) ));
+        samplePriceHistory.add(new ProductHistory(new BigDecimal(158), usd, LocalDate.of(2018, 5,27) ));
+        samplePriceHistory.add(new ProductHistory(new BigDecimal(166), usd, LocalDate.of(2019, 2,4) ));
+        samplePriceHistory.add(new ProductHistory(product.getPrice(), product.getCurrency(), LocalDate.now() ));
+        return samplePriceHistory;
     }
 
     private List<Product> saveSampleProducts() {

@@ -1,5 +1,9 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.model.exceptions.ProductNotFoundException;
+import com.es.phoneshop.model.order.SortField;
+import com.es.phoneshop.model.order.SortOrder;
+
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -9,6 +13,12 @@ import java.util.stream.Collectors;
 public class ArrayListProductDao implements ProductDao {
     private static final String SEPARATOR = " ";
     private static ProductDao instance;
+    private List<Product> products;
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    ArrayListProductDao() {
+        this.products = new ArrayList<>();
+    }
 
     public static synchronized ProductDao getInstance() {
         if (instance == null) {
@@ -16,14 +26,6 @@ public class ArrayListProductDao implements ProductDao {
         }
         return instance;
     }
-
-    private List<Product> products;
-
-    ArrayListProductDao() {
-        this.products = new ArrayList<>();
-    }
-
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public Product getProduct(Long id) throws ProductNotFoundException {

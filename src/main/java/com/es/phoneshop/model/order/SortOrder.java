@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model.order;
 
 public enum SortOrder {
     asc, desc
