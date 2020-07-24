@@ -1,111 +1,79 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.model.exceptions.ProductNotFoundException;
+import com.es.phoneshop.model.dao.ProductDao;
 import com.es.phoneshop.model.order.SortField;
 import com.es.phoneshop.model.order.SortOrder;
 
 import java.util.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
-public class ArrayListProductDao implements ProductDao {
-    private static final String SEPARATOR = " ";
-    private static ProductDao instance;
-    private List<Product> products;
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
-
-    ArrayListProductDao() {
-        this.products = new ArrayList<>();
+public class ArrayListProductDao extends AbstractDAO<Product> implements ProductDao {
+    private ArrayListProductDao() {
     }
 
-    public static synchronized ProductDao getInstance() {
-        if (instance == null) {
-            instance = new ArrayListProductDao();
+    public static ArrayListProductDao getInstance() {
+        return Holder.instance;
+    }
+
+    private static class Holder {
+        private static final ArrayListProductDao instance = new ArrayListProductDao();
+    }
+
+    private List<Product> defaultSearch() {
+        return items.stream()
+                .filter(product -> product.getPrice() != null)
+                .filter(product -> product.getStock() > 0)
+                .collect(Collectors.toList());
+    }
+
+    private List<Product> querySearch(String query) {
+        String[] words = query.split(" ");
+        return defaultSearch().stream()
+                .collect(Collectors.toMap(Function.identity(), product -> Arrays.stream(words)
+                        .filter(word -> product.getDescription().contains(word))
+                        .count()))
+                .entrySet().stream()
+                .filter(entry -> entry.getValue() != 0)
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    private List<Product> sortProducts(SortField sortField, SortOrder sortOrder, List<Product> productList) {
+        Comparator<Product> comparator = null;
+        switch (sortField) {
+            case description:
+                comparator = Comparator.comparing(product -> product.getDescription().toLowerCase());
+                break;
+            case price:
+                comparator = Comparator.comparing(Product::getPrice);
+                break;
         }
-        return instance;
-    }
 
-    @Override
-    public Product getProduct(Long id) throws ProductNotFoundException {
-        lock.readLock().lock();
-        try {
-            return products
-                    .stream()
-                    .filter(product -> product.getId().equals(id))
-                    .findAny()
-                    .orElseThrow(()-> new ProductNotFoundException(id));
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    @Override
-    public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
-        lock.readLock().lock();
-        try {
-            Comparator<Product> comparator = getComparatorForProducts(query, sortField, sortOrder);
-            return products.stream()
-                    .filter(product -> query == null || query.isEmpty() || isProductContainsQuery(product, query))
-                    .filter(product -> product.getPrice() != null)
-                    .filter(product -> product.getStock() > 0)
-                    .sorted(comparator)
-                    .collect(Collectors.toList());
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    private Comparator<Product> getComparatorForProducts(String query, SortField sortField, SortOrder sortOrder) {
-        Comparator<Product> comparator = Comparator.comparing((Product product) -> (query != null && !query.isEmpty()
-                ? getQueryRate(product, query) : 0))
-                .reversed();
-
-        if (sortField == SortField.description) {
-            comparator = Comparator.comparing(Product::getDescription);
-        } else if (sortField == SortField.price) {
-            comparator = Comparator.comparing(Product::getPrice);
-        } else if (sortOrder == SortOrder.desc) {
+        if (sortOrder == SortOrder.desc) {
             comparator = comparator.reversed();
         }
-        return comparator;
-    }
 
-    private double getQueryRate(Product product, String query) {
-        return (double) Arrays.stream(query.split(SEPARATOR))
-                .filter(wordFromQuery -> product.getDescription().contains(wordFromQuery))
-                .count() / product.getDescription().split(SEPARATOR).length;
-    }
-
-    private boolean isProductContainsQuery(Product product, String query) {
-        return Arrays.stream(product.getDescription().split(SEPARATOR))
-                .anyMatch(wordFromDescription -> Arrays.stream(query.split(SEPARATOR))
-                        .anyMatch(wordFromDescription::contains));
+        productList.sort(comparator);
+        return productList;
     }
 
     @Override
-    public void save(Product product) {
-        lock.readLock().lock();
-        try {
-            if (products.stream()
-                    .anyMatch(product1 -> product1.getId()
-                            .equals(product.getId()))) {
-                products.remove(product);
-            }
-            products.add(product);
-        } finally {
-            lock.readLock().unlock();
-        }
+    public synchronized List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
+        if (query != null && sortField == null) {
+            return querySearch(query);
+        } else if (query == null && sortField == null) {
+            return defaultSearch();
+        } else if (query == null) {
+            return sortProducts(sortField, sortOrder, defaultSearch());
+        } else
+            return sortProducts(sortField, sortOrder, querySearch(query));
     }
 
-    @Override
-    public void delete(Long id) {
-        lock.readLock().lock();
-        try {
-            products.removeIf(product -> product.getId().equals(id));
-        } finally {
-            lock.readLock().unlock();
-        }
+    public List<Product> getItems() {
+        return items;
     }
+
 }
