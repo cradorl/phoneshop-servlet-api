@@ -11,7 +11,7 @@
   </context-param>
 
   <listener>
-    <listener-class>com.es.phoneshop.web.DemoDataServletContextListener</listener-class>
+    <listener-class>com.es.phoneshop.web.listener.DemoDataServletContextListener</listener-class>
   </listener>
 
   <servlet>
@@ -24,21 +24,22 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>product</servlet-name>
+    <servlet-name>productDetails</servlet-name>
     <servlet-class>com.es.phoneshop.web.servlets.ProductDetailsPageServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>product</servlet-name>
+    <servlet-name>productDetails</servlet-name>
     <url-pattern>/products/*</url-pattern>
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>productHistory</servlet-name>
-    <servlet-class>com.es.phoneshop.web.servlets.ProductHistoryPageServlet</servlet-class>
+    <servlet-name>priceHistory</servlet-name>
+    <servlet-class>com.es.phoneshop.web.servlets.ProductPriceHistoryPageServlet</servlet-class>
   </servlet>
+
   <servlet-mapping>
-    <servlet-name>productHistory</servlet-name>
-    <url-pattern>/history</url-pattern>
+    <servlet-name>priceHistory</servlet-name>
+    <url-pattern>/products/priceHistory/*</url-pattern>
   </servlet-mapping>
 
   <error-page>

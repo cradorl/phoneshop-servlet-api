@@ -1,7 +1,7 @@
 package com.es.phoneshop.web.servlets;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.dao.ProductDao;
 import com.es.phoneshop.model.order.SortField;
 import com.es.phoneshop.model.order.SortOrder;
 
@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
+
 
 public class ProductListPageServlet extends HttpServlet {
 
@@ -31,7 +32,7 @@ public class ProductListPageServlet extends HttpServlet {
         request.setAttribute("products", productDao.findProducts(query,
                 Optional.ofNullable(sortField).map(SortField::valueOf).orElse(null),
                 Optional.ofNullable(sortOrder).map(SortOrder::valueOf).orElse(null)
-                ));
+        ));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 }
