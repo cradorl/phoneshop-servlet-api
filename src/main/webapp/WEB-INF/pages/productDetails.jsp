@@ -68,4 +68,5 @@
         <button>Add to cart</button>
         </p>
     </form>
+    <tags:recentlyViewedTag recentProducts="${recentProducts}"/>
 </tags:master>

@@ -1,13 +1,14 @@
 package com.es.phoneshop.web.servlets;
 
 import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.dao.CartService;
+import com.es.phoneshop.model.dao.ProductDao;
+import com.es.phoneshop.model.dao.RecentlyViewedProductsService;
 import com.es.phoneshop.model.dao.impl.DefaultCartService;
+import com.es.phoneshop.model.dao.impl.DefaultRecentlyViewedProductsService;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
 import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.dao.ProductDao;
-import com.es.phoneshop.web.listener.DemoDataServletContextListener;
+import com.es.phoneshop.model.recentlyviewedproducts.RecentlyViewedProducts;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -24,18 +25,24 @@ public class ProductDetailsPageServlet extends HttpServlet {
 
     private ProductDao productDao;
     private CartService cartService;
+    private RecentlyViewedProductsService recentlyViewedProductsService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
+        recentlyViewedProductsService=DefaultRecentlyViewedProductsService.getInstance();
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Long productId = parseProductId(request);
+            RecentlyViewedProducts recentlyViewedProducts =
+                    recentlyViewedProductsService.getRecentlyViewedProducts(request);
+            recentlyViewedProductsService.addProduct(productId, recentlyViewedProducts);
+            request.setAttribute("recentProducts", recentlyViewedProducts.getRecentlyViewedProducts());
             request.setAttribute("product", productDao.get(productId));
             request.setAttribute("cart", cartService.getCart(request));
             request.getRequestDispatcher("/WEB-INF/pages/productDetails.jsp").forward(request, response);
