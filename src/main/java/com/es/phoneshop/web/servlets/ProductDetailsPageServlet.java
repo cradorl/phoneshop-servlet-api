@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.NoSuchElementException;
 
 
@@ -48,8 +50,9 @@ public class ProductDetailsPageServlet extends HttpServlet {
         Long productId = parseProductId(request);
         int quantity;
         try {
-            quantity = Integer.parseInt(quantityString);
-        } catch (NoSuchElementException | NumberFormatException e) {
+            NumberFormat format=NumberFormat.getInstance(request.getLocale());
+            quantity = format.parse(quantityString).intValue();
+        } catch (NoSuchElementException | NumberFormatException | ParseException e) {
             request.setAttribute("error", "Not a number");
             doGet(request, response);
             return;
