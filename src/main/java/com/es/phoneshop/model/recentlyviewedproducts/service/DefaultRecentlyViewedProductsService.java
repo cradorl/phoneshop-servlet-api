@@ -1,7 +1,6 @@
-package com.es.phoneshop.model.dao.impl;
+package com.es.phoneshop.model.recentlyviewedproducts.service;
 
-import com.es.phoneshop.model.dao.ProductDao;
-import com.es.phoneshop.model.dao.RecentlyViewedProductsService;
+import com.es.phoneshop.model.product.dao.ProductDao;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.recentlyviewedproducts.RecentlyViewedProducts;
@@ -16,7 +15,7 @@ public class DefaultRecentlyViewedProductsService implements RecentlyViewedProdu
     private ProductDao productDao;
     private static final String RESENT_VIEWS_ATTRIBUTE="recentViews";
 
-    public DefaultRecentlyViewedProductsService() {
+    private DefaultRecentlyViewedProductsService() {
         productDao= ArrayListProductDao.getInstance();
     }
 
@@ -24,11 +23,12 @@ public class DefaultRecentlyViewedProductsService implements RecentlyViewedProdu
         return Holder.instance;
     }
 
-    public  static class Holder{
+    private  static class Holder{
         private  static final  DefaultRecentlyViewedProductsService instance= new DefaultRecentlyViewedProductsService();
     }
+
     @Override
-    public RecentlyViewedProducts getRecentlyViewedProducts(HttpServletRequest request) {
+    public synchronized RecentlyViewedProducts getRecentlyViewedProducts(HttpServletRequest request) {
         HttpSession session=request.getSession();
         RecentlyViewedProducts recentlyViewedProducts=
                 (RecentlyViewedProducts)session.getAttribute(RESENT_VIEWS_ATTRIBUTE);
@@ -40,7 +40,7 @@ public class DefaultRecentlyViewedProductsService implements RecentlyViewedProdu
     }
 
     @Override
-    public void addProduct(Long productId, RecentlyViewedProducts recentlyViewedProducts) {
+    public synchronized void addProduct(Long productId, RecentlyViewedProducts recentlyViewedProducts) {
         Product product=productDao.get(productId);
         Deque<Product> recentViewsProductList=recentlyViewedProducts.getRecentlyViewedProducts();
 

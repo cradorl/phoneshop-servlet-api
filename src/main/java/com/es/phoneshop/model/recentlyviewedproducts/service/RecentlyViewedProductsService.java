@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.dao;
+package com.es.phoneshop.model.recentlyviewedproducts.service;
 
 import com.es.phoneshop.model.recentlyviewedproducts.RecentlyViewedProducts;
 

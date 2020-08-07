@@ -1,6 +1,6 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.model.item.Item;
+import com.es.phoneshop.model.product.item.Item;
 
 import java.math.BigDecimal;
 import java.util.*;

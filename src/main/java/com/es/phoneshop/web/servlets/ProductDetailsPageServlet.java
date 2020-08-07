@@ -1,11 +1,10 @@
 package com.es.phoneshop.web.servlets;
 
-import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.model.dao.CartService;
-import com.es.phoneshop.model.dao.ProductDao;
-import com.es.phoneshop.model.dao.RecentlyViewedProductsService;
-import com.es.phoneshop.model.dao.impl.DefaultCartService;
-import com.es.phoneshop.model.dao.impl.DefaultRecentlyViewedProductsService;
+import com.es.phoneshop.model.cart.service.CartService;
+import com.es.phoneshop.model.product.dao.ProductDao;
+import com.es.phoneshop.model.recentlyviewedproducts.service.RecentlyViewedProductsService;
+import com.es.phoneshop.model.cart.service.DefaultCartService;
+import com.es.phoneshop.model.recentlyviewedproducts.service.DefaultRecentlyViewedProductsService;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.recentlyviewedproducts.RecentlyViewedProducts;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.NoSuchElementException;
-
 
 public class ProductDetailsPageServlet extends HttpServlet {
 
@@ -60,16 +58,14 @@ public class ProductDetailsPageServlet extends HttpServlet {
             NumberFormat format=NumberFormat.getInstance(request.getLocale());
             quantity = format.parse(quantityString).intValue();
         } catch (NoSuchElementException | NumberFormatException | ParseException e) {
-            request.setAttribute("error", "Not a number");
-            doGet(request, response);
+            response.sendRedirect(request.getContextPath()+"/products/" +productId+"?error=Not a number");
             return;
         }
-        Cart cart=cartService.getCart(request);
+
         try {
-            cartService.add(cart, productId, quantity);
+            cartService.add(cartService.getCart(request), productId, quantity);
         } catch (OutOfStockException e) {
-            request.setAttribute("error", "Out of stock, available"+e.getStockAvailable());
-            doGet(request, response);
+            response.sendRedirect(request.getContextPath()+"/products/" +productId+"?error=Out of stock, available "+e.getStockAvailable());
             return;
         }
         response.sendRedirect(request.getContextPath()+"/products/" +productId+"?message=Product added to cart");
@@ -79,5 +75,4 @@ public class ProductDetailsPageServlet extends HttpServlet {
         return Long.valueOf(request.getPathInfo().substring(1));
     }
 }
-
 

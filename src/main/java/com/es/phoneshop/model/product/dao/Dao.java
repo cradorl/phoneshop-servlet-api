@@ -1,6 +1,6 @@
-package com.es.phoneshop.model.dao;
+package com.es.phoneshop.model.product.dao;
 
-import com.es.phoneshop.model.item.Item;
+import com.es.phoneshop.model.product.item.Item;
 
 public interface Dao<T> {
 

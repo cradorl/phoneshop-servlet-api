@@ -19,6 +19,10 @@ public class CartItem {
         return quantity;
     }
 
+    public void increaseQuantity(int quantity) {
+        this.quantity += quantity;
+    }
+
     @Override
     public String toString() {
         return product.getCode() + ", " + quantity;

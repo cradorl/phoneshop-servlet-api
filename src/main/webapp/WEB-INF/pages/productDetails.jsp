@@ -13,59 +13,59 @@
                 ${param.message}
         </div>
     </c:if>
-    <c:if test="${not empty error}">
+    <c:if test="${not empty param.error}">
         <div class="error">
-                There was an error adding to cart
+                ${param.error}
         </div>
     </c:if>
     <p>
-        ${product.description}
+            ${product.description}
     </p>
     <form method="post">
-    <table>
-    <tr>
-        <td>Image</td>
-        <td>
-            <img src="${product.imageUrl}">
-        </td>
-    </tr>
+        <table>
+            <tr>
+                <td>Image</td>
+                <td>
+                    <img src="${product.imageUrl}">
+                </td>
+            </tr>
 
-    <tr>
-        <td>Code</td>
-        <td>
-            ${product.code}
-        </td>
-    </tr>
+            <tr>
+                <td>Code</td>
+                <td>
+                        ${product.code}
+                </td>
+            </tr>
 
-    <tr>
-        <td>Price</td>
-        <td class="price">
-            <fmt:formatNumber value="${product.price}" type="currency"
-                      currencySymbol="${product.currency.symbol}"/>
-        </td>
-    </tr>
+            <tr>
+                <td>Price</td>
+                <td class="price">
+                    <fmt:formatNumber value="${product.price}" type="currency"
+                                      currencySymbol="${product.currency.symbol}"/>
+                </td>
+            </tr>
 
-    <tr>
-        <td>Stock</td>
-        <td>
-            ${product.stock}
-    </td>
+            <tr>
+                <td>Stock</td>
+                <td>
+                        ${product.stock}
+                </td>
 
-    </tr>
-        <tr>
-            <td>Quantity</td>
-            <td>
+            </tr>
+            <tr>
+                <td>Quantity</td>
+                <td>
                     <input name="quantity" value="${not empty error? param.quantity:1}"class="quantity">
                     <c:if test="${not empty error}">
                         <div class="error">
-                            ${error}
+                                ${error}
                         </div>
                     </c:if>
-            </td>
-        </tr>
-    </table>
+                </td>
+            </tr>
+        </table>
         <p>
-        <button>Add to cart</button>
+            <button>Add to cart</button>
         </p>
     </form>
     <tags:recentlyViewedTag recentProducts="${recentProducts}"/>
