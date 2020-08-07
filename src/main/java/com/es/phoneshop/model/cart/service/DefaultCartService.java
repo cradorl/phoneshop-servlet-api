@@ -8,6 +8,7 @@ import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 public class DefaultCartService implements CartService {
@@ -28,10 +29,11 @@ public class DefaultCartService implements CartService {
     }
 
     @Override
-    public synchronized Cart getCart(HttpServletRequest request) {
-        Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
+    public synchronized Cart getCart(HttpSession session) {
+        Cart cart = (Cart) session.getAttribute(CART_SESSION_ATTRIBUTE);
         if (cart == null) {
-            request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
+            cart = new Cart();
+            session.setAttribute(CART_SESSION_ATTRIBUTE, cart);
         }
         return cart;
     }

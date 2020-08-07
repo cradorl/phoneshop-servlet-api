@@ -2,9 +2,11 @@ package com.es.phoneshop.model.product;
 
 import com.es.phoneshop.model.product.item.Item;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
-public class Product extends Item {
+
+public class Product extends Item implements Serializable  {
 
     private String code;
     private String description;
