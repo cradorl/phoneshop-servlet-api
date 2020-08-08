@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class Product extends Item implements Serializable  {
+public class Product extends Item implements Serializable {
 
     private String code;
     private String description;

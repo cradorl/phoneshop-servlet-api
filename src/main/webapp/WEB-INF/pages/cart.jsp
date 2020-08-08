@@ -8,6 +8,7 @@
     <p>
         Cart:${cart}
     </p>
+
     <c:if test="${not empty param.message}">
         <div class="success">
                 ${param.message}
@@ -72,6 +73,12 @@
                     </td>
                 </tr>
             </c:forEach>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Total cost</td>
+                <td>${cart.totalCost}</td>
+            </tr>
         </table>
         <p>
             <button>Update</button>

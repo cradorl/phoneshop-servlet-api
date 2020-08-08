@@ -13,6 +13,7 @@
       <img src="${pageContext.servletContext.contextPath}/images/logo.svg"/>
       PhoneShop
     </a>
+    <jsp:include page="/cart/minicart"/>
   </header>
   <main>
     <jsp:doBody/>
@@ -20,8 +21,5 @@
   <footer>
     &copy; made by Darya Merkulova
   </footer>
-<%--  <p>--%>
-<%--  (c)Darya Merkulova--%>
-<%--  <p>--%>
 </body>
 </html>

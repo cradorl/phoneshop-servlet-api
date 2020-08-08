@@ -30,7 +30,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
-        recentlyViewedProductsService=DefaultRecentlyViewedProductsService.getInstance();
+        recentlyViewedProductsService = DefaultRecentlyViewedProductsService.getInstance();
     }
 
     @Override
@@ -55,20 +55,20 @@ public class ProductDetailsPageServlet extends HttpServlet {
         Long productId = parseProductId(request);
         int quantity;
         try {
-            NumberFormat format=NumberFormat.getInstance(request.getLocale());
+            NumberFormat format = NumberFormat.getInstance(request.getLocale());
             quantity = format.parse(quantityString).intValue();
         } catch (NoSuchElementException | NumberFormatException | ParseException e) {
-            response.sendRedirect(request.getContextPath()+"/products/" +productId+"?error=Not a number");
+            response.sendRedirect(request.getContextPath() + "/products/" + productId + "?error=Not a number");
             return;
         }
 
         try {
             cartService.add(cartService.getCart(request.getSession()), productId, quantity);
         } catch (OutOfStockException e) {
-            response.sendRedirect(request.getContextPath()+"/products/" +productId+"?error=Out of stock, available "+e.getStockAvailable());
+            response.sendRedirect(request.getContextPath() + "/products/" + productId + "?error=Out of stock, available " + e.getStockAvailable());
             return;
         }
-        response.sendRedirect(request.getContextPath()+"/products/" +productId+"?message=Product added to cart");
+        response.sendRedirect(request.getContextPath() + "/products/" + productId + "?message=Product added to cart");
     }
 
     private Long parseProductId(HttpServletRequest request) {

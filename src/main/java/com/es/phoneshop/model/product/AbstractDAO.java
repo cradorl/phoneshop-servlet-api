@@ -38,7 +38,7 @@ public abstract class AbstractDAO<T extends Item> implements Dao<T> {
         if (id == null) {
             throw new IllegalArgumentException("Id should not be null");
         }
-        findItemById(id).ifPresentOrElse((item) -> items.remove(item), () ->{
+        findItemById(id).ifPresentOrElse((item) -> items.remove(item), () -> {
             throw new NoSuchElementException("Item with id " + id + " was not found");
         });
     }

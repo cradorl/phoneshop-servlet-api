@@ -1,6 +1,5 @@
 package com.es.phoneshop.web.servlets;
 
-import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.service.CartService;
 import com.es.phoneshop.model.cart.service.DefaultCartService;
 
@@ -11,8 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class DeleteCartItemServlet extends HttpServlet {
-
+public class MiniCartServlet extends HttpServlet {
     private CartService cartService;
 
     @Override
@@ -22,13 +20,10 @@ public class DeleteCartItemServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String productId = request.getPathInfo().substring(1);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("cart", cartService.getCart(request.getSession()));
 
-        Cart cart = cartService.getCart(request.getSession());
-        cartService.delete(cart, Long.valueOf(productId));
-
-        response.sendRedirect(request.getContextPath() + "/cart?message=Cart removed successfully");
+        request.getRequestDispatcher("/WEB-INF/pages/miniCart.jsp").include(request, response);
     }
 }
 
