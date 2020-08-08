@@ -42,6 +42,15 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>deleteCartItem</servlet-name>
+    <servlet-class>com.es.phoneshop.web.servlets.DeleteCartItemServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>deleteCartItem</servlet-name>
+    <url-pattern>/cart/deleteCartItem/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>priceHistory</servlet-name>
     <servlet-class>com.es.phoneshop.web.servlets.ProductPriceHistoryPageServlet</servlet-class>
   </servlet>

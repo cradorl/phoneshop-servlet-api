@@ -39,7 +39,7 @@ public class DefaultCartService implements CartService {
 
     @Override
     public synchronized void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
-       checkQuantity(quantity);
+        checkQuantity(quantity);
 
         Product product = productDao.get(productId);
         Optional<CartItem> optionalCartItem = findItemInCart(cart, productId);
@@ -85,5 +85,13 @@ public class DefaultCartService implements CartService {
         } else {
             cart.getItems().add(new CartItem(product, quantity));
         }
+    }
+
+    @Override
+    public void delete(Cart cart, Long productId) {
+        cart.getItems().removeIf(cartItem ->
+                productId.equals(cartItem.getProduct().getId()));
+
+
     }
 }
