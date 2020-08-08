@@ -4,6 +4,7 @@ import com.es.phoneshop.model.cart.service.CartService;
 import com.es.phoneshop.model.cart.service.DefaultCartService;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
 import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.dao.ProductDao;
 import com.es.phoneshop.model.recentlyviewedproducts.RecentlyViewedProducts;
 import com.es.phoneshop.model.recentlyviewedproducts.service.DefaultRecentlyViewedProductsService;
@@ -18,6 +19,9 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class CartPageServlet extends HttpServlet {
@@ -40,28 +44,43 @@ public class CartPageServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String quantityString = request.getParameter("quantity");
-        Long productId = parseProductId(request);
-        int quantity;
-        try {
-            NumberFormat format=NumberFormat.getInstance(request.getLocale());
-            quantity = format.parse(quantityString).intValue();
-        } catch (NoSuchElementException | NumberFormatException | ParseException e) {
-            response.sendRedirect(request.getContextPath()+"/products/" +productId+"?error=Not a number");
-            return;
-        }
+        String[] productsIds = request.getParameterValues("productId");
+        String[] quantities = request.getParameterValues("quantity");
+        Map<Long, String> errors = new HashMap<>(  );
 
-        try {
-            cartService.add(cartService.getCart(request.getSession()), productId, quantity);
-        } catch (OutOfStockException e) {
-            response.sendRedirect(request.getContextPath()+"/products/" +productId+"?error=Out of stock, available "+e.getStockAvailable());
-            return;
+        for (int i = 0; i < productsIds.length; i++) {
+            Long productId = Long.valueOf(productsIds[i]);
+
+            int quantity;
+            try {
+                quantity = Integer.parseInt(quantities[i]);
+                cartService.update(cartService.getCart(request.getSession()), productId, quantity);
+            } catch (NumberFormatException | OutOfStockException e) {
+                handleError(errors, productId, e);
+            }
         }
-        response.sendRedirect(request.getContextPath()+"/products/" +productId+"?message=Product added to cart");
+        if(errors.isEmpty()){
+            response.sendRedirect(request.getContextPath() + "/cart?message=Cart updated successfully");
+        }else {
+            request.setAttribute("errors", errors);
+            doGet(request, response);
+        }
+    }
+    private void handleError(Map<Long, String> errors, Long productId,  Exception e)  {
+        if (e.getClass().equals(NumberFormatException.class)) {
+            errors.put(productId,  "Not a number");
+        } else {
+            if (((OutOfStockException) e).getStockRequested() <= 0) {
+                errors.put(productId, "Can't be negative or zero");
+            } else {
+                errors.put(productId, "Out of stock, max available" + ((OutOfStockException) e).getStockAvailable());
+            }
+        }
     }
 
-    private Long parseProductId(HttpServletRequest request) {
-        return Long.valueOf(request.getPathInfo().substring(1));
+    private NumberFormat getNumberFormat(Locale locale) {
+        return NumberFormat.getInstance(locale);
     }
+
 }
 

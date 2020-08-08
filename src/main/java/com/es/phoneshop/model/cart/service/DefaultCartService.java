@@ -7,7 +7,6 @@ import com.es.phoneshop.model.exceptions.OutOfStockException;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
@@ -40,19 +39,17 @@ public class DefaultCartService implements CartService {
 
     @Override
     public synchronized void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
+       checkQuantity(quantity);
+
         Product product = productDao.get(productId);
-        if (product.getStock() < quantity) {
+        Optional<CartItem> optionalCartItem = findItemInCart(cart, productId);
+        int productsAmount = optionalCartItem.map(CartItem::getQuantity).orElse(0);
+
+        if (product.getStock() < quantity + productsAmount) {
             throw new OutOfStockException(product, quantity, product.getStock());
         }
-
-        Optional<CartItem> optionalCartItem = findItemInCart(cart, productId);
         if (optionalCartItem.isPresent()) {
-            CartItem cartItem = optionalCartItem.get();
-            if (product.getStock() >= cartItem.getQuantity() + quantity) {
-                cartItem.increaseQuantity(quantity);
-            } else {
-                throw new OutOfStockException(product, quantity, product.getStock());
-            }
+            optionalCartItem.get().setQuantity(productsAmount + quantity);
         } else {
             cart.getItems().add(new CartItem(product, quantity));
         }
@@ -63,7 +60,30 @@ public class DefaultCartService implements CartService {
                 .getItems()
                 .stream()
                 .filter(cartItem -> cartItem.getProduct().getId().equals(productId))
-                .findFirst();
+                .findAny();
     }
 
+    private synchronized void checkQuantity(int quantity) throws OutOfStockException {
+        if (quantity <= 0) {
+            throw new OutOfStockException(null, quantity, 0);
+        }
+    }
+
+    @Override
+    public void update(Cart cart, Long productId, int quantity) throws OutOfStockException, OutOfMemoryError {
+        checkQuantity(quantity);
+
+        Product product = productDao.get(productId);
+        Optional<CartItem> optionalCartItem = findItemInCart(cart, productId);
+        int productsAmount = optionalCartItem.map(CartItem::getQuantity).orElse(0);
+
+        if (product.getStock() < quantity + productsAmount) {
+            throw new OutOfStockException(product, quantity, product.getStock());
+        }
+        if (optionalCartItem.isPresent()) {
+            optionalCartItem.get().setQuantity(quantity);
+        } else {
+            cart.getItems().add(new CartItem(product, quantity));
+        }
+    }
 }

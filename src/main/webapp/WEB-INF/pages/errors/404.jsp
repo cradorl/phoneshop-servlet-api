@@ -12,9 +12,6 @@
     <h1 style="background: #fff4f0; color: #570022" >
         Sorry an error occurred!
     </h1>
-    <h2>
-        404 Error
-    </h2>
     </body>
     </html>
 </tags:master>
