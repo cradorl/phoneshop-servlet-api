@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class ProductDetailsPageServlet extends HttpServlet {
@@ -50,25 +52,40 @@ public class ProductDetailsPageServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String quantityString = request.getParameter("quantity");
-        Long productId = parseProductId(request);
-        int quantity;
-        try {
-            NumberFormat format = NumberFormat.getInstance(request.getLocale());
-            quantity = format.parse(quantityString).intValue();
-        } catch (NoSuchElementException | NumberFormatException | ParseException e) {
-            response.sendRedirect(request.getContextPath() + "/products/" + productId + "?error=Not a number");
-            return;
-        }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String[] productsIds = request.getParameterValues("productId");
+        String[] quantities = request.getParameterValues("quantity");
+        Map<Long, String> errors = new HashMap<>();
 
-        try {
-            cartService.add(cartService.getCart(request.getSession()), productId, quantity);
-        } catch (OutOfStockException e) {
-            response.sendRedirect(request.getContextPath() + "/products/" + productId + "?error=Out of stock, available " + e.getStockAvailable());
-            return;
+        for (int i = 0; i < productsIds.length; i++) {
+            Long productId = Long.valueOf(productsIds[i]);
+
+            int quantity;
+            try {
+                quantity = Integer.parseInt(quantities[i]);
+                cartService.update(cartService.getCart(request.getSession()), productId, quantity);
+            } catch (NumberFormatException | OutOfStockException e) {
+                handleError(errors, productId, e);
+            }
         }
-        response.sendRedirect(request.getContextPath() + "/products/" + productId + "?message=Product added to cart");
+        if (errors.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/cart?message=Cart updated successfully");
+        } else {
+            request.setAttribute("errors", errors);
+            doGet(request, response);
+        }
+    }
+
+    private void handleError(Map<Long, String> errors, Long productId, Exception e) {
+        if (e.getClass().equals(NumberFormatException.class)) {
+            errors.put(productId, "Not a number");
+        } else {
+            if (((OutOfStockException) e).getStockRequested() <= 0) {
+                errors.put(productId, "Can't be negative or zero");
+            } else {
+                errors.put(productId, "Out of stock, max available" + ((OutOfStockException) e).getStockAvailable());
+            }
+        }
     }
 
     private Long parseProductId(HttpServletRequest request) {

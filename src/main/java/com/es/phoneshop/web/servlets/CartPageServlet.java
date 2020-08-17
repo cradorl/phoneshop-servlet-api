@@ -16,7 +16,6 @@ import java.util.Map;
 
 public class CartPageServlet extends HttpServlet {
 
-    private ProductDao productDao;
     private CartService cartService;
 
     @Override
