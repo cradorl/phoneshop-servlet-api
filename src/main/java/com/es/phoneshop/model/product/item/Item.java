@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.item;
+package com.es.phoneshop.model.product.item;
 
 public class Item {
 

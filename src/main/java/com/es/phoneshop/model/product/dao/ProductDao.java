@@ -1,6 +1,5 @@
-package com.es.phoneshop.model.dao;
+package com.es.phoneshop.model.product.dao;
 
-import com.es.phoneshop.model.dao.Dao;
 import com.es.phoneshop.model.order.SortField;
 import com.es.phoneshop.model.order.SortOrder;
 import com.es.phoneshop.model.product.Product;
