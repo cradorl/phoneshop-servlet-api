@@ -51,14 +51,15 @@ public class CheckoutPageServlet extends HttpServlet {
         setRequiredParameters(request, "deliveryAddress", errors, order::setFirstName);
         setPaymentMethod(request, errors, order);
 
-        handleError(request, response, errors, order);
+        handleError(request, response, errors, order, cart);
     }
 
     private void handleError(HttpServletRequest request, HttpServletResponse response, Map<String, String> errors,
-                             Order order) throws IOException, ServletException {
+                             Order order, Cart cart) throws IOException, ServletException {
         if (errors.isEmpty()) {
             orderService.placeOrder(order);
-            response.sendRedirect(request.getContextPath() + "/overview/" + order.getId());
+            cartService.clear(cart);
+            response.sendRedirect(request.getContextPath() + "/order/overview/" + order.getSecureId());
         } else {
             request.setAttribute("errors", errors);
             request.setAttribute("order", order);

@@ -61,4 +61,18 @@ public class ArrayListOrderDao implements OrderDao {
             writeLock.unlock();
         }
     }
+
+    @Override
+    public Order getOrderBySecureId(String id) throws OrderNotFoundException {
+        Lock readLock = rwLock.readLock();
+        readLock.lock();
+        try {
+            return orderList.stream()
+                    .filter((order) -> id.equals(order.getSecureId()))
+                    .findAny()
+                    .orElseThrow(OrderNotFoundException::new);
+        } finally {
+            readLock.unlock();
+        }
+    }
 }

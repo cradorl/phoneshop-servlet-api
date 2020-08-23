@@ -60,12 +60,21 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>miniCart</servlet-name>
-    <servlet-class>com.es.phoneshop.web.servlets.MiniCartServlet</servlet-class>
-  </servlet>
+  <servlet-name>miniCart</servlet-name>
+  <servlet-class>com.es.phoneshop.web.servlets.MiniCartServlet</servlet-class>
+</servlet>
   <servlet-mapping>
     <servlet-name>miniCart</servlet-name>
     <url-pattern>/cart/minicart</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>orderOverview</servlet-name>
+    <servlet-class>com.es.phoneshop.web.servlets.OrderOverviewPageServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>orderOverview</servlet-name>
+    <url-pattern>/order/overview/*</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -79,18 +88,23 @@
   </servlet-mapping>
 
   <error-page>
-    <location>/WEB-INF/pages/errors/productNotFound.jsp</location>
     <exception-type>com.es.phoneshop.model.exceptions.ProductNotFoundException</exception-type>
+    <location>/WEB-INF/pages/errors/productNotFound.jsp</location>
   </error-page>
 
   <error-page>
-    <location>/WEB-INF/pages/errors/error.jsp</location>
     <error-code>500</error-code>
+    <location>/WEB-INF/pages/errors/error.jsp</location>
   </error-page>
 
   <error-page>
-    <location>/WEB-INF/pages/errors/404.jsp</location>
     <error-code>404</error-code>
+    <location>/WEB-INF/pages/errors/404.jsp</location>
+  </error-page>
+
+  <error-page>
+    <exception-type>com.es.phoneshop.model.order.OrderNotFoundException</exception-type>
+    <location>/WEB-INF/pages/errors/orderNotFound.jsp</location>
   </error-page>
 
 </web-app>

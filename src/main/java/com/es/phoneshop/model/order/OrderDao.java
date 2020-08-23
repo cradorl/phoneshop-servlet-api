@@ -5,4 +5,6 @@ public interface OrderDao {
 
     void save(Order order) throws OrderNotFoundException;
 
+    Order getOrderBySecureId(String secureId) throws  OrderNotFoundException;
+
 }

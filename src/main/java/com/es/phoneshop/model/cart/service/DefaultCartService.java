@@ -117,4 +117,10 @@ public class DefaultCartService implements CartService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         cart.setTotalCost(totalPrice);
     }
+
+    @Override
+    public void clear(Cart cart) {
+        cart.getItems().clear();
+        recalculateCart(cart);
+    }
 }
