@@ -1,7 +1,7 @@
 package com.es.phoneshop.model.product.dao;
 
-import com.es.phoneshop.model.order.SortField;
-import com.es.phoneshop.model.order.SortOrder;
+import com.es.phoneshop.model.enums.SortField;
+import com.es.phoneshop.model.enums.SortOrder;
 import com.es.phoneshop.model.product.Product;
 
 import java.util.List;

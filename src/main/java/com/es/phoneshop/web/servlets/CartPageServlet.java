@@ -3,7 +3,6 @@ package com.es.phoneshop.web.servlets;
 import com.es.phoneshop.model.cart.service.CartService;
 import com.es.phoneshop.model.cart.service.DefaultCartService;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
-import com.es.phoneshop.model.product.dao.ProductDao;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

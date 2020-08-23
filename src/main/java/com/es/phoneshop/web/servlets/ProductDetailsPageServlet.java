@@ -1,13 +1,13 @@
 package com.es.phoneshop.web.servlets;
 
 import com.es.phoneshop.model.cart.service.CartService;
-import com.es.phoneshop.model.product.dao.ProductDao;
-import com.es.phoneshop.model.recentlyviewedproducts.service.RecentlyViewedProductsService;
 import com.es.phoneshop.model.cart.service.DefaultCartService;
-import com.es.phoneshop.model.recentlyviewedproducts.service.DefaultRecentlyViewedProductsService;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
 import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.dao.ProductDao;
 import com.es.phoneshop.model.recentlyviewedproducts.RecentlyViewedProducts;
+import com.es.phoneshop.model.recentlyviewedproducts.service.DefaultRecentlyViewedProductsService;
+import com.es.phoneshop.model.recentlyviewedproducts.service.RecentlyViewedProductsService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;

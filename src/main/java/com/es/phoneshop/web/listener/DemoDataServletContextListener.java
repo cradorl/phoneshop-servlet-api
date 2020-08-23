@@ -1,21 +1,24 @@
 package com.es.phoneshop.web.listener;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.ProductPriceHistory;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.ProductPriceHistory;
 import com.es.phoneshop.model.product.dao.ProductDao;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Currency;
+import java.util.GregorianCalendar;
 
 public class DemoDataServletContextListener implements ServletContextListener {
     private ProductDao productDao = ArrayListProductDao.getInstance();
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        boolean insertDemoData = Boolean.valueOf(servletContextEvent.getServletContext().getInitParameter("insertDemoData"));
+        boolean insertDemoData = Boolean.parseBoolean(servletContextEvent.getServletContext().getInitParameter("insertDemoData"));
         if (insertDemoData) {
             loadSampleData();
         }

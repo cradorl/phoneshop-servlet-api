@@ -2,9 +2,9 @@ package com.es.phoneshop.web.servlets;
 
 import com.es.phoneshop.model.cart.service.CartService;
 import com.es.phoneshop.model.cart.service.DefaultCartService;
+import com.es.phoneshop.model.enums.SortField;
+import com.es.phoneshop.model.enums.SortOrder;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
-import com.es.phoneshop.model.order.SortField;
-import com.es.phoneshop.model.order.SortOrder;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.dao.ProductDao;
 
@@ -56,14 +56,14 @@ public class ProductListPageServlet extends HttpServlet {
             int quantity;
             try {
                 quantity = Integer.parseInt(quantities[i]);
-                cartService.update(cartService.getCart(request.getSession()), productId, quantity);
+                cartService.add(cartService.getCart(request.getSession()), productId, quantity);
             } catch (NumberFormatException | OutOfStockException e) {
                 handleError(errors, productId, e);
             }
         }
         if (errors.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/products?"
-                    + getQueryString(request) + "message=Product " +" added to cart");
+                    + getQueryString(request) + "message=Product " + " added to cart");
         } else {
             request.setAttribute("errors", errors);
             doGet(request, response);
