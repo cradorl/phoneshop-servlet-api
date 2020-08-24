@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -47,7 +50,7 @@ public class CheckoutPageServlet extends HttpServlet {
         setRequiredParameters(request, "firstName", errors, order::setFirstName);
         setRequiredParameters(request, "lastName", errors, order::setFirstName);
         setRequiredParameters(request, "phone", errors, order::setFirstName);
-        //setRequiredParameters(request, "", errors, order::setFirstName);
+        setRequiredDateParameter(request, errors, order);
         setRequiredParameters(request, "deliveryAddress", errors, order::setFirstName);
         setPaymentMethod(request, errors, order);
 
@@ -83,6 +86,28 @@ public class CheckoutPageServlet extends HttpServlet {
             errors.put("paymentMethod", "Value is required");
         } else {
             order.setPaymentMethod(PaymentMethod.valueOf(value));
+        }
+    }
+    private boolean isNotEmpty(String parameter, Map<String, String> errorAttributes, String value) {
+        if (value.isEmpty()) {
+            errorAttributes.put(parameter, "Value is required");
+            return false;
+        }
+        return true;
+    }
+    private void setRequiredDateParameter(HttpServletRequest request,
+                                          Map<String, String> errorAttributes, Order order) {
+        String value = request.getParameter("deliveryDate");
+        if (isNotEmpty("deliveryDate", errorAttributes, value))
+        {
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+            Date dateValue = null;
+            try {
+                dateValue = format.parse(value);
+            } catch (ParseException e) {
+                errorAttributes.put("deliveryDate", "Wrong format, should be: dd-MM-yyyy");
+            }
+            order.setDeliveryDate(dateValue);
         }
     }
 }

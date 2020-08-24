@@ -98,15 +98,19 @@
             <tags:orderFormRow name="deliveryAddress" label="Delivery Address" order="${order}" errors="${errors}"></tags:orderFormRow>
 
             <tr>
-                <td>Payment method<span style="color:red">*</span></td>
+                <td>Payment method<span style="color: red">*</span></td>
                 <td>
-                    <select name="paymentMethod">
-                           <option></option>
-                        <c:forEach var="paymentMethod" items="${paymentMethods}">
-                            <option>${paymentMethod}</option>
-                        </c:forEach>
-                    </select>
-                    <c:set var="error" value="${errors['paymentMethod']}"/>
+                    <label>
+                        <select name="paymentMethod">
+                            <c:set var="error" value="${errors['paymentMethod']}" />
+                            <option>${not empty error ? param['paymentMethod'] : order.paymentMethod}</option>
+                            <c:forEach var="paymentMethod" items="${paymentMethods}">
+                                <c:if test="${paymentMethod != order.paymentMethod}">
+                                    <option>${paymentMethod}</option>
+                                </c:if>
+                            </c:forEach>
+                        </select>
+                    </label>
                     <c:if test="${not empty error}">
                         <div class="error">
                                 ${error}

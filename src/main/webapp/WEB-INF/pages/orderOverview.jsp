@@ -76,20 +76,21 @@
             </td>
         </tr>
     </table>
+    </table>
     <h2>Your details</h2>
     <table>
-        <tags:orderOverviewRow name="firstName" label="First Name" order="${order}"></tags:orderOverviewRow>
-        <tags:orderOverviewRow name="lastName" label="Last Name" order="${order}"></tags:orderOverviewRow>
+        <tags:orderOverviewRow name="firstName" label="First name" order="${order}"></tags:orderOverviewRow>
+        <tags:orderOverviewRow name="lastName" label="Last name" order="${order}"></tags:orderOverviewRow>
         <tags:orderOverviewRow name="phone" label="Phone" order="${order}"></tags:orderOverviewRow>
-        <tags:orderOverviewRow name="deliveryDate" label="Delivery Date" order="${order}"></tags:orderOverviewRow>
-        <tags:orderOverviewRow name="deliveryAddress" label="Delivery Address" order="${order}"></tags:orderOverviewRow>
-
+        <tags:orderOverviewRow name="deliveryDate" label="Delivery date" order="${order}"></tags:orderOverviewRow>
+        <tags:orderOverviewRow name="deliveryAddress" label="Delivery address" order="${order}"></tags:orderOverviewRow>
         <tr>
-            <td>Payment method<span style="color:red">*</span></td>
+            <td>Payment method</td>
             <td>
                     ${order.paymentMethod}
             </td>
         </tr>
     </table>
+
     </form>
 </tags:master>

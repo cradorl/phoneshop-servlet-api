@@ -4,6 +4,7 @@ import com.es.phoneshop.model.cart.Cart;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Order extends Cart {
     private Long id;
@@ -15,7 +16,7 @@ public class Order extends Cart {
     private String lastName;
     private String phone;
 
-    private LocalDate deliveryDate;
+    private Date deliveryDate;
     private String deliveryAddress;
     private PaymentMethod paymentMethod;
 
@@ -59,11 +60,11 @@ public class Order extends Cart {
         this.phone = phone;
     }
 
-    public LocalDate getDeliveryDate() {
+    public Date getDeliveryDate() {
         return deliveryDate;
     }
 
-    public void setDeliveryDate(LocalDate deliveryDate) {
+    public void setDeliveryDate(Date deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
 
