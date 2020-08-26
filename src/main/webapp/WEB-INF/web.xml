@@ -23,6 +23,15 @@
     <url-pattern>/products</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>searchPage</servlet-name>
+    <servlet-class>com.es.phoneshop.web.servlets.AdvancedSearchPageServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>searchPage</servlet-name>
+    <url-pattern>/search</url-pattern>
+  </servlet-mapping>
+
   <filter>
     <filter-name>dosFilter</filter-name>
     <filter-class>com.es.phoneshop.web.servlets.DosFilter</filter-class>
