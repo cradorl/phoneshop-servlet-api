@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.exceptions;
+package com.es.phoneshop.exceptions;
 
 public class ProductNotFoundException extends RuntimeException {
     private Long productId;

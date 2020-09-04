@@ -1,15 +1,15 @@
-package com.es.phoneshop.model.cart.service;
+package com.es.phoneshop.model.cart;
 
-import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.model.cart.CartItem;
-import com.es.phoneshop.model.product.dao.ProductDao;
-import com.es.phoneshop.model.exceptions.OutOfStockException;
-import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.dao.ArrayListProductDao;
+import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.exceptions.OutOfStockException;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
-import java.util.Optional;;
+import java.util.Optional;
+
+;
 
 public class DefaultCartService implements CartService {
     private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";

@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.exceptions;
+package com.es.phoneshop.exceptions;
 
 import com.es.phoneshop.model.product.Product;
 

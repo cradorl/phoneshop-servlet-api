@@ -34,7 +34,7 @@
 
   <filter>
     <filter-name>dosFilter</filter-name>
-    <filter-class>com.es.phoneshop.web.servlets.DosFilter</filter-class>
+    <filter-class>com.es.phoneshop.web.servlets.filter.DosFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>dosFilter</filter-name>
@@ -106,7 +106,7 @@
   </servlet-mapping>
 
   <error-page>
-    <exception-type>com.es.phoneshop.model.exceptions.ProductNotFoundException</exception-type>
+    <exception-type>com.es.phoneshop.exceptions.ProductNotFoundException</exception-type>
     <location>/WEB-INF/pages/errors/productNotFound.jsp</location>
   </error-page>
 
@@ -121,7 +121,7 @@
   </error-page>
 
   <error-page>
-    <exception-type>com.es.phoneshop.model.order.OrderNotFoundException</exception-type>
+    <exception-type>com.es.phoneshop.exceptions.OrderNotFoundException</exception-type>
     <location>/WEB-INF/pages/errors/orderNotFound.jsp</location>
   </error-page>
 

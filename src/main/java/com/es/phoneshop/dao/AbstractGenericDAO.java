@@ -1,18 +1,30 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.dao;
 
-import com.es.phoneshop.model.product.dao.Dao;
-import com.es.phoneshop.model.product.item.Item;
+import com.es.phoneshop.model.Item;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public abstract class AbstractDAO<T extends Item> implements Dao<T> {
-    List<T> items = new ArrayList<>();
+public abstract class AbstractGenericDAO<T extends Item> implements GenericDao<T> {
+    protected List<T> items;
+    protected final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+
+
+    protected AbstractGenericDAO() {
+        items = new ArrayList<>();
+    }
+
+    protected void setItemList(List<T> items) {
+        this.items = items;
+    }
 
     @Override
     public synchronized void save(T item) {
+
         if (item == null) {
             throw new IllegalArgumentException("Item should not be null");
         }

@@ -1,7 +1,7 @@
 package com.es.phoneshop.web.servlets;
 
-import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.dao.ProductDao;
+import com.es.phoneshop.dao.ArrayListProductDao;
+import com.es.phoneshop.dao.ProductDao;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -13,9 +13,10 @@ import java.util.NoSuchElementException;
 
 public class ProductPriceHistoryPageServlet extends HttpServlet {
     private ProductDao productDao;
+    private static final String PRODUCT_HISTORY_JSP = "/WEB-INF/pages/productHistory.jsp";
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
+    public void init(ServletConfig config) {
         productDao = ArrayListProductDao.getInstance();
     }
 
@@ -24,7 +25,7 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
         try {
             Long productId = Long.valueOf(request.getPathInfo().substring(1));
             request.setAttribute("product", productDao.get(productId));
-            request.getRequestDispatcher("/WEB-INF/pages/productHistory.jsp").forward(request, response);
+            request.getRequestDispatcher(PRODUCT_HISTORY_JSP).forward(request, response);
         } catch (NoSuchElementException | NumberFormatException e) {
             response.sendError(404);
         }

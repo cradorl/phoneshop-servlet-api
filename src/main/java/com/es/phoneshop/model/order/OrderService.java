@@ -1,6 +1,7 @@
 package com.es.phoneshop.model.order;
 
 import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.enums.PaymentMethod;
 
 import java.util.List;
 

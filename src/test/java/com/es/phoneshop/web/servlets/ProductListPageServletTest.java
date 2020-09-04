@@ -1,6 +1,6 @@
 package com.es.phoneshop.web.servlets;
 
-import com.es.phoneshop.model.product.dao.ProductDao;
+import com.es.phoneshop.dao.ProductDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

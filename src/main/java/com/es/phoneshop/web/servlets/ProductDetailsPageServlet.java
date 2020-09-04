@@ -1,13 +1,14 @@
 package com.es.phoneshop.web.servlets;
 
-import com.es.phoneshop.model.cart.service.CartService;
-import com.es.phoneshop.model.cart.service.DefaultCartService;
-import com.es.phoneshop.model.exceptions.OutOfStockException;
-import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.dao.ProductDao;
+import com.es.phoneshop.model.cart.CartService;
+import com.es.phoneshop.model.cart.DefaultCartService;
+import com.es.phoneshop.exceptions.OutOfStockException;
+import com.es.phoneshop.dao.ArrayListProductDao;
+import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.model.recentlyviewedproducts.RecentlyViewedProducts;
 import com.es.phoneshop.model.recentlyviewedproducts.service.DefaultRecentlyViewedProductsService;
 import com.es.phoneshop.model.recentlyviewedproducts.service.RecentlyViewedProductsService;
+import com.es.phoneshop.servletHelper.ServletHelper;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -15,15 +16,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import static com.es.phoneshop.servletHelper.ServletHelper.parseProductId;
+import static com.es.phoneshop.servletHelper.ServletHelper.setParametersForProductDetails;
 
 public class ProductDetailsPageServlet extends HttpServlet {
 
     private ProductDao productDao;
     private CartService cartService;
     private RecentlyViewedProductsService recentlyViewedProductsService;
+    private static final String PRODUCT_DETAILS_JSP = "/WEB-INF/pages/productDetails.jsp";
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -40,10 +46,8 @@ public class ProductDetailsPageServlet extends HttpServlet {
             RecentlyViewedProducts recentlyViewedProducts =
                     recentlyViewedProductsService.getRecentlyViewedProducts(request);
             recentlyViewedProductsService.addProduct(productId, recentlyViewedProducts);
-            request.setAttribute("recentProducts", recentlyViewedProducts.getRecentlyViewedProducts());
-            request.setAttribute("product", productDao.get(productId));
-            request.setAttribute("cart", cartService.getCart(request.getSession()));
-            request.getRequestDispatcher("/WEB-INF/pages/productDetails.jsp").forward(request, response);
+            ServletHelper.setParametersForProductDetails(request, recentlyViewedProducts, productDao, cartService, productId);
+            request.getRequestDispatcher(PRODUCT_DETAILS_JSP).forward(request, response);
         } catch (NoSuchElementException | NumberFormatException e) {
             response.sendError(404);
         }
@@ -51,43 +55,28 @@ public class ProductDetailsPageServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String[] productsIds = request.getParameterValues("productId");
-        String[] quantities = request.getParameterValues("quantity");
-        Map<Long, String> errors = new HashMap<>();
-
-        for (int i = 0; i < productsIds.length; i++) {
-            Long productId = Long.valueOf(productsIds[i]);
-
-            int quantity;
-            try {
-                quantity = Integer.parseInt(quantities[i]);
-                cartService.update(cartService.getCart(request.getSession()), productId, quantity);
-            } catch (NumberFormatException | OutOfStockException e) {
-                handleError(errors, productId, e);
-            }
+        Long productId = ServletHelper.getProductIfExist(request, response, productDao).getId();
+        try {
+            int quantity = ServletHelper.getQuantity(request.getParameter("quantity"), request);
+            cartService.add(cartService.getCart(request.getSession()), productId, quantity);
+        } catch (ParseException | OutOfStockException e) {
+            handleError(request, response, e);
+            return;
         }
-        if (errors.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/cart?message=Cart updated successfully");
-        } else {
-            request.setAttribute("errors", errors);
-            doGet(request, response);
-        }
+        response.sendRedirect(request.getContextPath() + "/products?message=Product " + productId + " added to cart");
     }
 
-    private void handleError(Map<Long, String> errors, Long productId, Exception e) {
-        if (e.getClass().equals(NumberFormatException.class)) {
-            errors.put(productId, "Not a number");
+    private void handleError(HttpServletRequest request, HttpServletResponse response, Exception e) throws ServletException, IOException {
+        if (e.getClass().equals(ParseException.class)) {
+            request.setAttribute("error", "Not a number");
         } else {
             if (((OutOfStockException) e).getStockRequested() <= 0) {
-                errors.put(productId, "Can't be negative or zero");
+                request.setAttribute("error", "Can't be negative or zero");
             } else {
-                errors.put(productId, "Out of stock, max available" + ((OutOfStockException) e).getStockAvailable());
+                request.setAttribute("error", "Out of stock, max available " + ((OutOfStockException) e).getStockAvailable());
             }
         }
-    }
-
-    private Long parseProductId(HttpServletRequest request) {
-        return Long.valueOf(request.getPathInfo().substring(1));
+        doGet(request, response);
     }
 }
 

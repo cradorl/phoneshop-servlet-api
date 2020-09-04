@@ -1,8 +1,9 @@
 package com.es.phoneshop.web.servlets;
 
-import com.es.phoneshop.model.cart.service.CartService;
-import com.es.phoneshop.model.cart.service.DefaultCartService;
-import com.es.phoneshop.model.exceptions.OutOfStockException;
+import com.es.phoneshop.model.cart.CartService;
+import com.es.phoneshop.model.cart.DefaultCartService;
+import com.es.phoneshop.exceptions.OutOfStockException;
+import com.es.phoneshop.servletHelper.ServletHelper;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -10,12 +11,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CartPageServlet extends HttpServlet {
 
     private CartService cartService;
+    private static final String CART_JSP = "/WEB-INF/pages/cart.jsp";
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -26,44 +29,38 @@ public class CartPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("cart", cartService.getCart(request.getSession()));
-        request.getRequestDispatcher("/WEB-INF/pages/cart.jsp").forward(request, response);
+        request.getRequestDispatcher(CART_JSP).forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String[] productsIds = request.getParameterValues("productId");
+        String[] productIds = request.getParameterValues("productId");
         String[] quantities = request.getParameterValues("quantity");
-        Map<Long, String> errors = new HashMap<>();
+        Map<Long, String> errorAttributes = new HashMap<>();
 
-        for (int i = 0; i < productsIds.length; i++) {
-            Long productId = Long.valueOf(productsIds[i]);
-
-            int quantity;
-            try {
-                quantity = Integer.parseInt(quantities[i]);
-                cartService.update(cartService.getCart(request.getSession()), productId, quantity);
-            } catch (NumberFormatException | OutOfStockException e) {
-                handleError(errors, productId, e);
+        if (productIds != null) {
+            for (int i = 0; i < productIds.length; i++) {
+                Long productId = ServletHelper.getProductIdIfExist(request, response, productIds[i]);
+                try {
+                    int quantity = ServletHelper.getQuantity(quantities[i], request);
+                    cartService.update(cartService.getCart(request.getSession()), productId, quantity);
+                } catch (ParseException | OutOfStockException e) {
+                    errorAttributes = ServletHelper.mapErrors(productId, e);
+                }
             }
         }
-        if (errors.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/cart?message=Cart updated successfully");
-        } else {
-            request.setAttribute("errors", errors);
-            doGet(request, response);
-        }
+        handleErrors(request, response, errorAttributes);
     }
 
-    private void handleError(Map<Long, String> errors, Long productId, Exception e) {
-        if (e.getClass().equals(NumberFormatException.class)) {
-            errors.put(productId, "Not a number");
+    private void handleErrors(HttpServletRequest request, HttpServletResponse response, Map<Long, String> errorAttributes) throws IOException, ServletException {
+        if (errorAttributes.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/cart?message=Cart updated successfully");
         } else {
-            if (((OutOfStockException) e).getStockRequested() <= 0) {
-                errors.put(productId, "Can't be negative or zero");
-            } else {
-                errors.put(productId, "Out of stock, max available" + ((OutOfStockException) e).getStockAvailable());
-            }
+            request.setAttribute("errors", errorAttributes);
+            request.setAttribute("cart", cartService.getCart(request.getSession()));
+            request.getRequestDispatcher(CART_JSP).forward(request, response);
         }
     }
 }
+
 

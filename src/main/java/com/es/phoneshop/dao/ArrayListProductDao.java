@@ -1,6 +1,6 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.dao;
 
-import com.es.phoneshop.model.product.dao.ProductDao;
+import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.enums.SortField;
 import com.es.phoneshop.model.enums.SortOrder;
 
@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
-public class ArrayListProductDao extends AbstractDAO<Product> implements ProductDao {
+public class ArrayListProductDao extends AbstractGenericDAO<Product> implements ProductDao {
     private ArrayListProductDao() {
     }
 

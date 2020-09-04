@@ -1,5 +1,6 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.dao.ArrayListProductDao;
 import com.es.phoneshop.model.enums.SortField;
 import com.es.phoneshop.model.enums.SortOrder;
 import org.junit.After;

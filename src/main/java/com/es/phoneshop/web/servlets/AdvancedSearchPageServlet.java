@@ -1,11 +1,6 @@
 package com.es.phoneshop.web.servlets;
 
-import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.model.cart.service.CartService;
-import com.es.phoneshop.model.cart.service.DefaultCartService;
-import com.es.phoneshop.model.exceptions.OutOfStockException;
-import com.es.phoneshop.model.order.DefaultOrderService;
-import com.es.phoneshop.model.order.OrderService;
+import com.es.phoneshop.exceptions.OutOfStockException;
 import com.es.phoneshop.model.product.Product;
 
 import javax.servlet.ServletConfig;

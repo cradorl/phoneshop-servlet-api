@@ -1,12 +1,13 @@
 package com.es.phoneshop.model.order;
 
 import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.Item;
+import com.es.phoneshop.model.enums.PaymentMethod;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Date;
 
-public class Order extends Cart {
+public class Order extends Cart implements Item {
     private Long id;
     private String secureId;
     private BigDecimal subtotal;
@@ -84,12 +85,14 @@ public class Order extends Cart {
         this.paymentMethod = paymentMethod;
     }
 
+    @Override
     public Long getId() {
-        return id;
+        return null;
     }
 
+    @Override
     public void setId(Long id) {
-        this.id = id;
+
     }
 
     public String getSecureId() {

@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.security;
+package com.es.phoneshop.security;
 
 public interface DosProtectionService {
     boolean isAllowed(String ip);
